@@ -9,10 +9,27 @@ class Download:
         pass
 
     @classmethod
+    def get_content(self, url):
+        """Get RSS url content"""
+        return urlopen(url).read()
+
+    @classmethod
     def save_file(self, url, path):
         """Downloads and saves RSS url to provided path"""
-        #url = 'http://showrss.info/feeds/1166.rss'
-        #path = '1166.rss'
-        response = urlopen(url)
+        response = Download.get_content(url)
         with open(path, 'wb') as file:
-            file.write(response.read())
+            file.write(response)
+
+    @classmethod
+    def save_content(self, content, path):
+        """Saves RSS content to provided path"""
+        with open(path, 'wb') as file:
+            file.write(content)
+
+    @classmethod
+    def read_content(self, path):
+        """Saves RSS content to provided path"""
+        content = ''
+        with open(path, 'r') as file:
+            content = file.read()
+        return content
