@@ -1,31 +1,40 @@
 import xml.etree.ElementTree as ET
 from item import Item
 
+
+# TODO -> Exception handling for XML parsing
 class Parse:
 
     """ """
 
-    ns = {'showrss': 'http://showrss.info/'}
-
     def __init__(self):
     	pass    
 
-    @classmethod
-    def parse_content(self, content):
+    @staticmethod
+    def parse_content(content):
         """Parse RSS file"""
         root = ET.fromstring(content)
-        return [Parse.parse_item(item) for item in root.iter('item')]
+        
+        nameSpaces = parse_namespaces(root)
+        
+        return [Parse.parse_item(item, nameSpaces) 
+            for item in root.iter('item')]
 
-    @classmethod
-    def parse_item(self, item):
+    @staticmethod
+    def parse_namespaces(root):
+        """Parse RSS namespaces from root node"""
+        return {'showrss': 'http://showrss.info/'}
+
+    @staticmethod
+    def parse_item(item, nameSpaces):
         """Parse RSS item"""
         try:
             return Item(item.find('title').text,
                 item.find('link').text,
                 item.find('pubDate').text,
-                item.find('showrss:showid', self.ns).text,
-                item.find('showrss:showname', self.ns).text,
-                item.find('enclosure').text,
+                item.find('showrss:showid', nameSpaces).text,
+                item.find('showrss:showname', nameSpaces).text,
+                item.find('enclosure').attrib['url'],
                 ' ') #quality
         except AttributeError as ex:
         	print('ERROR: AttributeError exception ->' +\
